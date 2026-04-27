@@ -39,7 +39,7 @@ npm run dev
 이 저장소 루트의 `render.yaml`을 사용합니다.
 
 1. 저장소를 GitHub로 푸시
-2. Render Blueprint 생성 시 해당 저장소 선택
+2. Render Web Service 또는 Blueprint 생성 시 해당 저장소 선택
 3. 환경변수 설정
 4. 배포
 

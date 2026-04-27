@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import type { CSSProperties, FormEvent } from "react";
+import { useMemo, useState } from "react";
 
 type Role = "C_LEVEL" | "DEVELOPER";
 
@@ -15,16 +16,18 @@ type SurveyFormState = {
   focusKeywords: string[];
 };
 
-const roleOptions: Array<{ value: Role; label: string; description: string }> = [
+const roleOptions: Array<{ value: Role; label: string; description: string; meta: string }> = [
   {
     value: "C_LEVEL",
     label: "C-레벨",
-    description: "경영 의사결정과 AI 투자/리스크 관점"
+    description: "의사결정, 투자 판단, 리스크 관리 관점",
+    meta: "Strategy"
   },
   {
     value: "DEVELOPER",
     label: "개발자",
-    description: "실무 구현과 개발 생산성 관점"
+    description: "구현, 자동화, 개발 생산성 관점",
+    meta: "Build"
   }
 ];
 
@@ -37,7 +40,7 @@ const levelOptions = [
 
 const learnOptions = [
   "AI 기본 개념(LLM, RAG, Agent)",
-  "우리 조직에 맞는 도입 전략",
+  "조직에 맞는 AI 도입 전략",
   "생성형 AI 보안/컴플라이언스",
   "프롬프트 작성 실습",
   "개발 파이프라인 통합(CI/CD, 테스트)",
@@ -91,6 +94,19 @@ export default function HomePage() {
     return Math.round((score / 7) * 100);
   }, [form]);
 
+  const roleLabel = form.role === "C_LEVEL" ? "C-레벨 트랙" : "개발자 트랙";
+
+  const nextPrompt = useMemo(() => {
+    if (!form.name.trim()) return "이름을 입력하면 시작됩니다";
+    if (!form.respondentEmail.includes("@")) return "회신 이메일을 확인해주세요";
+    if (!form.knownLevel) return "현재 AI 이해 수준을 선택해주세요";
+    if (form.currentKnowledgeText.trim().length <= 15) return "알고 있는 범위를 조금 더 적어주세요";
+    if (form.wantsToLearn.length === 0) return "알고 싶은 주제를 선택해주세요";
+    if (form.desiredOutcomeText.trim().length <= 15) return "원하는 학습 결과를 적어주세요";
+    if (form.focusKeywords.length === 0) return "중점 키워드를 선택해주세요";
+    return "제출 준비가 끝났습니다";
+  }, [form]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setResultMessage("");
@@ -139,19 +155,36 @@ export default function HomePage() {
 
   return (
     <main className="page-shell">
-      <header className="hero">
-        <p className="hero-eyebrow">AI Foundations Survey</p>
-        <h1>C-레벨과 개발자를 위한 AI 기초 강의 수요조사</h1>
-        <p className="hero-copy">
-          어디까지 알고 있는지, 무엇을 알고 싶은지, 무엇에 집중하고 싶은지를 빠르게 수집해
-          강의 커리큘럼에 반영합니다.
-        </p>
+      <header className="survey-header">
+        <nav className="topbar" aria-label="설문 정보">
+          <span className="brand-mark">AI Survey</span>
+          <span className="duration-pill">약 3분</span>
+        </nav>
+
+        <section className="intro-panel" aria-labelledby="survey-title">
+          <div className="intro-copy">
+            <p className="eyebrow">C-level & Developer</p>
+            <h1 id="survey-title">AI 기초 강의 수요조사</h1>
+            <p>
+              현재 이해 수준, 알고 싶은 주제, 강의에서 꼭 다뤄야 할 키워드를 모아
+              커리큘럼의 밀도를 조정합니다.
+            </p>
+          </div>
+          <div
+            className="progress-orbit"
+            aria-label={`응답 완성도 ${completion}%`}
+            style={{ "--percent": completion } as CSSProperties}
+          >
+            <span>{completion}</span>
+            <small>%</small>
+          </div>
+        </section>
       </header>
 
-      <section className="progress-card" aria-label="응답 진행률">
-        <div className="progress-topline">
-          <span>응답 완성도</span>
-          <strong>{completion}%</strong>
+      <section className="progress-card" aria-label="다음 입력 안내">
+        <div>
+          <span className="progress-label">{roleLabel}</span>
+          <strong>{nextPrompt}</strong>
         </div>
         <div className="progress-track">
           <div className="progress-fill" style={{ width: `${completion}%` }} />
@@ -160,20 +193,21 @@ export default function HomePage() {
 
       <form className="survey-form" onSubmit={handleSubmit}>
         <section className="panel">
-          <h2>1) 대상 구분</h2>
-          <p className="panel-description">
-            커리큘럼 난이도와 사례를 분기하기 위한 기본 정보입니다.
-          </p>
-          <div className="option-grid">
+          <div className="section-heading">
+            <span>01</span>
+            <h2>대상과 회신 정보</h2>
+          </div>
+          <div className="role-switch" role="group" aria-label="대상 선택">
             {roleOptions.map((role) => (
               <button
                 key={role.value}
                 type="button"
-                className={`selectable ${form.role === role.value ? "active" : ""}`}
+                className={`role-option ${form.role === role.value ? "active" : ""}`}
                 onClick={() => setForm((prev) => ({ ...prev, role: role.value }))}
               >
-                <span className="selectable-title">{role.label}</span>
-                <span className="selectable-caption">{role.description}</span>
+                <small>{role.meta}</small>
+                <strong>{role.label}</strong>
+                <span>{role.description}</span>
               </button>
             ))}
           </div>
@@ -206,8 +240,10 @@ export default function HomePage() {
         </section>
 
         <section className="panel">
-          <h2>2) 어디까지 알고 있어요?</h2>
-          <p className="panel-description">현재 AI 활용 수준을 알려주세요.</p>
+          <div className="section-heading">
+            <span>02</span>
+            <h2>어디까지 알고 있어요?</h2>
+          </div>
           <div className="chip-wrap">
             {levelOptions.map((option) => (
               <button
@@ -221,9 +257,9 @@ export default function HomePage() {
             ))}
           </div>
           <label className="field">
-            <span>현재 알고 있는 범위를 조금 더 설명해주세요</span>
+            <span>현재 알고 있는 범위</span>
             <textarea
-              placeholder="예: ChatGPT는 사용하지만 프롬프트 구조화가 어려워요. LLM과 RAG 차이가 헷갈립니다."
+              placeholder="예: ChatGPT는 써봤지만 LLM과 RAG의 차이는 아직 헷갈립니다."
               value={form.currentKnowledgeText}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, currentKnowledgeText: event.target.value }))
@@ -235,8 +271,10 @@ export default function HomePage() {
         </section>
 
         <section className="panel">
-          <h2>3) 어떤 걸 알고 싶어요?</h2>
-          <p className="panel-description">필요한 주제를 복수 선택해주세요.</p>
+          <div className="section-heading">
+            <span>03</span>
+            <h2>어떤 걸 알고 싶어요?</h2>
+          </div>
           <div className="chip-wrap">
             {learnOptions.map((option) => (
               <button
@@ -257,7 +295,7 @@ export default function HomePage() {
           <label className="field">
             <span>강의를 듣고 얻고 싶은 결과</span>
             <textarea
-              placeholder="예: 우리 팀의 AI 도입 우선순위를 정하고, 개발/비개발 인력이 공통 언어를 갖고 싶어요."
+              placeholder="예: 경영진과 개발자가 AI 도입 우선순위를 같은 언어로 논의하고 싶습니다."
               value={form.desiredOutcomeText}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, desiredOutcomeText: event.target.value }))
@@ -269,14 +307,16 @@ export default function HomePage() {
         </section>
 
         <section className="panel">
-          <h2>4) 중점적으로 다루면 좋은 키워드</h2>
-          <p className="panel-description">핵심 키워드를 선택해 주세요.</p>
-          <div className="chip-wrap">
+          <div className="section-heading">
+            <span>04</span>
+            <h2>중점 키워드</h2>
+          </div>
+          <div className="chip-wrap keyword-grid">
             {keywordOptions.map((keyword) => (
               <button
                 key={keyword}
                 type="button"
-                className={`chip ${form.focusKeywords.includes(keyword) ? "active" : ""}`}
+                className={`chip keyword ${form.focusKeywords.includes(keyword) ? "active" : ""}`}
                 onClick={() =>
                   setForm((prev) => ({
                     ...prev,
@@ -292,11 +332,11 @@ export default function HomePage() {
 
         <footer className="sticky-submit">
           <div className="submit-summary">
-            <span>{form.role === "C_LEVEL" ? "C-레벨 트랙" : "개발자 트랙"}</span>
+            <span>{roleLabel}</span>
             <strong>{completion}% 작성됨</strong>
           </div>
           <button type="submit" className="primary-cta" disabled={isSubmitting}>
-            {isSubmitting ? "전송 중..." : "수요조사 제출하기"}
+            {isSubmitting ? "전송 중..." : "제출"}
           </button>
         </footer>
       </form>

@@ -83,6 +83,8 @@ export async function POST(request: Request) {
     });
 
     const roleLabel = body.role === "C_LEVEL" ? "C-레벨" : "개발자";
+    const wantsToLearn = body.wantsToLearn ?? [];
+    const focusKeywords = body.focusKeywords ?? [];
 
     const html = `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;color:#222222">
@@ -97,14 +99,10 @@ export async function POST(request: Request) {
         <p style="margin-top:0">${escapeHtml(body.knownLevel!)}</p>
         <p style="white-space:pre-wrap">${escapeHtml(body.currentKnowledgeText!)}</p>
         <p><strong>2) 어떤 걸 알고 싶어요?</strong></p>
-        <ul>
-          ${(body.wantsToLearn ?? [])
-            .map((item) => `<li>${escapeHtml(item)}</li>`)
-            .join("")}
-        </ul>
+        <ul>${wantsToLearn.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
         <p style="white-space:pre-wrap">${escapeHtml(body.desiredOutcomeText!)}</p>
         <p><strong>3) 중점 키워드</strong></p>
-        <p>${(body.focusKeywords ?? []).map((keyword) => `#${escapeHtml(keyword)}`).join(" ")}</p>
+        <p>${focusKeywords.map((keyword) => `#${escapeHtml(keyword)}`).join(" ")}</p>
       </div>
     `;
 
@@ -119,11 +117,11 @@ export async function POST(request: Request) {
       body.currentKnowledgeText ?? "",
       "",
       "2) 어떤 걸 알고 싶어요?",
-      ...(body.wantsToLearn ?? []).map((item) => `- ${item}`),
+      ...wantsToLearn.map((item) => `- ${item}`),
       body.desiredOutcomeText ?? "",
       "",
       "3) 중점 키워드",
-      ...(body.focusKeywords ?? []).map((keyword) => `#${keyword}`)
+      ...focusKeywords.map((keyword) => `#${keyword}`)
     ].join("\n");
 
     await transporter.sendMail({
