@@ -8,6 +8,8 @@
   --color-border: #dddddd;
   --color-canvas: #ffffff;
   --color-soft: #f7f7f7;
+  --color-warm: #fff7f8;
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
   --shadow-airbnb:
     rgba(0, 0, 0, 0.02) 0 0 0 1px,
     rgba(0, 0, 0, 0.04) 0 2px 6px 0,
@@ -53,11 +55,11 @@ button {
 .page-shell {
   width: min(100%, 720px);
   margin: 0 auto;
-  padding: 0 16px 112px;
+  padding: 0 14px 112px;
 }
 
 .survey-header {
-  padding: 12px 0 14px;
+  padding: 12px 0 16px;
 }
 
 .topbar {
@@ -68,8 +70,28 @@ button {
 }
 
 .brand-mark {
-  color: var(--color-rausch);
+  color: var(--color-ink);
   font-size: 17px;
+  font-weight: 800;
+}
+
+.brand-mark::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--color-rausch);
+  box-shadow: 0 0 0 5px rgba(255, 56, 92, 0.12);
+}
+
+.topbar-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--color-ash);
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -94,11 +116,12 @@ button {
 
 .intro-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 88px;
-  gap: 14px;
-  align-items: end;
-  padding: 18px 0 4px;
-  animation: scene-rise 460ms ease both;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  gap: 12px;
+  align-items: center;
+  min-height: 174px;
+  padding: 18px 0 10px;
+  animation: scene-rise 620ms var(--ease-enter) both;
 }
 
 .eyebrow {
@@ -109,7 +132,7 @@ button {
 
 .intro-copy h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 31px;
   line-height: 1.12;
   font-weight: 800;
 }
@@ -121,8 +144,8 @@ button {
 }
 
 .progress-orbit {
-  width: 88px;
-  height: 88px;
+  width: 86px;
+  height: 86px;
   display: grid;
   place-items: center;
   align-self: center;
@@ -161,14 +184,67 @@ button {
   font-weight: 700;
 }
 
+.scene-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-soft);
+  animation: scene-rise 720ms var(--ease-enter) 80ms both;
+}
+
+.scene-dot {
+  min-width: 0;
+  min-height: 48px;
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--color-ash);
+  text-align: center;
+}
+
+.scene-dot strong,
+.scene-dot small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scene-dot strong {
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.scene-dot small {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.scene-dot.current {
+  border-color: var(--color-border);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+.scene-dot.done {
+  background: var(--color-ink);
+  color: var(--color-canvas);
+}
+
 .progress-card {
   position: sticky;
   top: 0;
   z-index: 20;
   display: grid;
   gap: 10px;
-  margin: 0 -16px 14px;
-  padding: 12px 16px;
+  margin: 0 -14px 14px;
+  padding: 12px 14px;
   background: rgba(255, 255, 255, 0.96);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -193,7 +269,7 @@ button {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--color-rausch), var(--color-rausch-deep), var(--color-plus));
-  transition: width 260ms ease;
+  transition: width 360ms var(--ease-enter);
 }
 
 .survey-form {
@@ -208,7 +284,7 @@ button {
   border: 1px solid var(--color-border);
   border-radius: 16px;
   background: var(--color-canvas);
-  animation: panel-in 480ms ease both;
+  animation: panel-in 620ms var(--ease-enter) both;
 }
 
 .panel:nth-of-type(2) {
@@ -289,7 +365,7 @@ button {
 
 .role-option.active {
   border-color: var(--color-ink);
-  background: #fff7f8;
+  background: var(--color-warm);
   box-shadow: var(--shadow-airbnb);
 }
 
@@ -353,10 +429,10 @@ button {
   font-size: 14px;
   font-weight: 650;
   transition:
-    transform 140ms ease,
-    border-color 140ms ease,
-    background-color 140ms ease,
-    color 140ms ease;
+    transform 140ms var(--ease-enter),
+    border-color 140ms var(--ease-enter),
+    background-color 140ms var(--ease-enter),
+    color 140ms var(--ease-enter);
 }
 
 .chip.active {
@@ -406,9 +482,9 @@ button {
   font-size: 15px;
   font-weight: 800;
   transition:
-    transform 120ms ease,
-    background-color 120ms ease,
-    opacity 120ms ease;
+    transform 120ms var(--ease-enter),
+    background-color 120ms var(--ease-enter),
+    opacity 120ms var(--ease-enter);
 }
 
 .primary-cta:disabled {
@@ -452,6 +528,7 @@ button {
 
   .intro-panel {
     grid-template-columns: minmax(0, 1fr) 108px;
+    min-height: 196px;
     padding-top: 28px;
   }
 

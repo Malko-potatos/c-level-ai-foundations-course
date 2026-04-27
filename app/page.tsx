@@ -66,6 +66,13 @@ function toggleOption(source: string[], value: string) {
     : [...source, value];
 }
 
+function isStepComplete(step: number, form: SurveyFormState) {
+  if (step === 1) return Boolean(form.name.trim()) && form.respondentEmail.includes("@");
+  if (step === 2) return Boolean(form.knownLevel) && Boolean(form.currentKnowledgeText.trim());
+  if (step === 3) return form.wantsToLearn.length > 0 && Boolean(form.desiredOutcomeText.trim());
+  return form.focusKeywords.length > 0;
+}
+
 export default function HomePage() {
   const [form, setForm] = useState<SurveyFormState>({
     role: "C_LEVEL",
@@ -95,6 +102,13 @@ export default function HomePage() {
   }, [form]);
 
   const roleLabel = form.role === "C_LEVEL" ? "C-레벨 트랙" : "개발자 트랙";
+  const sceneItems = [
+    { number: "01", label: "Profile", done: isStepComplete(1, form) },
+    { number: "02", label: "Level", done: isStepComplete(2, form) },
+    { number: "03", label: "Need", done: isStepComplete(3, form) },
+    { number: "04", label: "Focus", done: isStepComplete(4, form) }
+  ];
+  const currentScene = Math.min(sceneItems.filter((scene) => scene.done).length + 1, 4);
 
   const nextPrompt = useMemo(() => {
     if (!form.name.trim()) return "이름을 입력하면 시작됩니다";
@@ -166,7 +180,10 @@ export default function HomePage() {
       <header className="survey-header">
         <nav className="topbar" aria-label="설문 정보">
           <span className="brand-mark">AI Survey</span>
-          <span className="duration-pill">약 3분</span>
+          <div className="topbar-meta">
+            <span>Scene {String(currentScene).padStart(2, "0")}</span>
+            <span className="duration-pill">약 3분</span>
+          </div>
         </nav>
 
         <section className="intro-panel" aria-labelledby="survey-title">
@@ -187,6 +204,20 @@ export default function HomePage() {
             <small>%</small>
           </div>
         </section>
+
+        <div className="scene-strip" aria-label="설문 장면 진행 상태">
+          {sceneItems.map((scene, index) => (
+            <span
+              key={scene.number}
+              className={`scene-dot ${scene.done ? "done" : ""} ${
+                currentScene === index + 1 ? "current" : ""
+              }`}
+            >
+              <strong>{scene.number}</strong>
+              <small>{scene.label}</small>
+            </span>
+          ))}
+        </div>
       </header>
 
       <section className="progress-card" aria-label="다음 입력 안내">
