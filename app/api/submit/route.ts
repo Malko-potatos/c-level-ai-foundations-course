@@ -26,18 +26,18 @@ function escapeHtml(input: string) {
 }
 
 function validate(body: Partial<Payload>): string | null {
-  if (!body.name || body.name.trim().length < 2) return "이름이 올바르지 않습니다.";
+  if (!body.name || body.name.trim().length === 0) return "이름을 입력해주세요.";
   if (!body.respondentEmail || !body.respondentEmail.includes("@")) {
     return "이메일 형식이 올바르지 않습니다.";
   }
   if (!body.knownLevel) return "AI 이해 수준을 선택해주세요.";
-  if (!body.currentKnowledgeText || body.currentKnowledgeText.trim().length < 10) {
+  if (!body.currentKnowledgeText || body.currentKnowledgeText.trim().length === 0) {
     return "현재 이해 수준 설명을 입력해주세요.";
   }
   if (!body.wantsToLearn || body.wantsToLearn.length === 0) {
     return "알고 싶은 주제를 선택해주세요.";
   }
-  if (!body.desiredOutcomeText || body.desiredOutcomeText.trim().length < 10) {
+  if (!body.desiredOutcomeText || body.desiredOutcomeText.trim().length === 0) {
     return "원하는 학습 결과를 입력해주세요.";
   }
   if (!body.focusKeywords || body.focusKeywords.length === 0) {

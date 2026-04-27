@@ -83,12 +83,12 @@ export default function HomePage() {
 
   const completion = useMemo(() => {
     let score = 0;
-    if (form.name.trim().length > 1) score += 1;
+    if (form.name.trim().length > 0) score += 1;
     if (form.respondentEmail.includes("@")) score += 1;
     if (form.knownLevel.length > 0) score += 1;
-    if (form.currentKnowledgeText.trim().length > 15) score += 1;
+    if (form.currentKnowledgeText.trim().length > 0) score += 1;
     if (form.wantsToLearn.length > 0) score += 1;
-    if (form.desiredOutcomeText.trim().length > 15) score += 1;
+    if (form.desiredOutcomeText.trim().length > 0) score += 1;
     if (form.focusKeywords.length > 0) score += 1;
 
     return Math.round((score / 7) * 100);
@@ -100,9 +100,9 @@ export default function HomePage() {
     if (!form.name.trim()) return "이름을 입력하면 시작됩니다";
     if (!form.respondentEmail.includes("@")) return "회신 이메일을 확인해주세요";
     if (!form.knownLevel) return "현재 AI 이해 수준을 선택해주세요";
-    if (form.currentKnowledgeText.trim().length <= 15) return "알고 있는 범위를 조금 더 적어주세요";
+    if (!form.currentKnowledgeText.trim()) return "알고 있는 범위를 적어주세요";
     if (form.wantsToLearn.length === 0) return "알고 싶은 주제를 선택해주세요";
-    if (form.desiredOutcomeText.trim().length <= 15) return "원하는 학습 결과를 적어주세요";
+    if (!form.desiredOutcomeText.trim()) return "원하는 학습 결과를 적어주세요";
     if (form.focusKeywords.length === 0) return "중점 키워드를 선택해주세요";
     return "제출 준비가 끝났습니다";
   }, [form]);
@@ -116,8 +116,16 @@ export default function HomePage() {
       setResultMessage("현재 AI 이해 수준을 선택해주세요.");
       return;
     }
+    if (!form.currentKnowledgeText.trim()) {
+      setResultMessage("현재 알고 있는 범위를 입력해주세요.");
+      return;
+    }
     if (form.wantsToLearn.length === 0) {
       setResultMessage("알고 싶은 주제를 1개 이상 선택해주세요.");
+      return;
+    }
+    if (!form.desiredOutcomeText.trim()) {
+      setResultMessage("강의를 듣고 얻고 싶은 결과를 입력해주세요.");
       return;
     }
     if (form.focusKeywords.length === 0) {
