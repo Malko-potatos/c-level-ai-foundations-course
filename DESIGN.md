@@ -24,7 +24,9 @@ Core tokens:
 
 ## Typography
 
-Use the existing single-family stack: Airbnb Cereal VF when available, then Circular and native sans fallbacks. Keep labels dense and confident with 700 to 850 weights. Body copy should stay around 15px to 16px on mobile with a comfortable line height and a maximum line length near 65 characters.
+Use Pretendard Variable as the primary Korean UI font, then Pretendard, Airbnb Cereal VF, Circular, and native sans fallbacks. Keep the product UI single-family so the survey feels fast and practical rather than editorially fussy.
+
+Mobile typography should feel compact, not tiny: hero title around 27px, section headings around 16px, form body around 15px, and metadata around 11px to 12px. Keep touch targets at 44px or larger even when label text is visually reduced. Use 700 to 780 weights for labels and headings, with modest negative tracking on the hero only.
 
 ## Components
 
