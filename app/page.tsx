@@ -197,7 +197,11 @@ export default function HomePage() {
           </div>
           <div
             className="progress-orbit"
+            role="progressbar"
             aria-label={`응답 완성도 ${completion}%`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={completion}
             style={{ "--percent": completion } as CSSProperties}
           >
             <span>{completion}</span>
@@ -212,6 +216,7 @@ export default function HomePage() {
               className={`scene-dot ${scene.done ? "done" : ""} ${
                 currentScene === index + 1 ? "current" : ""
               }`}
+              aria-current={currentScene === index + 1 ? "step" : undefined}
             >
               <strong>{scene.number}</strong>
               <small>{scene.label}</small>
@@ -220,7 +225,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section className="progress-card" aria-label="다음 입력 안내">
+      <section className="progress-card" aria-label="다음 입력 안내" aria-live="polite">
         <div>
           <span className="progress-label">{roleLabel}</span>
           <strong>{nextPrompt}</strong>
@@ -242,6 +247,7 @@ export default function HomePage() {
                 key={role.value}
                 type="button"
                 className={`role-option ${form.role === role.value ? "active" : ""}`}
+                aria-pressed={form.role === role.value}
                 onClick={() => setForm((prev) => ({ ...prev, role: role.value }))}
               >
                 <small>{role.meta}</small>
@@ -256,6 +262,7 @@ export default function HomePage() {
               <input
                 type="text"
                 placeholder="홍길동"
+                autoComplete="name"
                 value={form.name}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, name: event.target.value }))
@@ -268,6 +275,8 @@ export default function HomePage() {
               <input
                 type="email"
                 placeholder="you@company.com"
+                autoComplete="email"
+                inputMode="email"
                 value={form.respondentEmail}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, respondentEmail: event.target.value }))
@@ -289,6 +298,7 @@ export default function HomePage() {
                 key={option}
                 type="button"
                 className={`chip ${form.knownLevel === option ? "active" : ""}`}
+                aria-pressed={form.knownLevel === option}
                 onClick={() => setForm((prev) => ({ ...prev, knownLevel: option }))}
               >
                 {option}
@@ -320,6 +330,7 @@ export default function HomePage() {
                 key={option}
                 type="button"
                 className={`chip ${form.wantsToLearn.includes(option) ? "active" : ""}`}
+                aria-pressed={form.wantsToLearn.includes(option)}
                 onClick={() =>
                   setForm((prev) => ({
                     ...prev,
@@ -356,6 +367,7 @@ export default function HomePage() {
                 key={keyword}
                 type="button"
                 className={`chip keyword ${form.focusKeywords.includes(keyword) ? "active" : ""}`}
+                aria-pressed={form.focusKeywords.includes(keyword)}
                 onClick={() =>
                   setForm((prev) => ({
                     ...prev,
@@ -374,14 +386,16 @@ export default function HomePage() {
             <span>{roleLabel}</span>
             <strong>{completion}% 작성됨</strong>
           </div>
-          <button type="submit" className="primary-cta" disabled={isSubmitting}>
+          <button type="submit" className="primary-cta" disabled={isSubmitting} aria-busy={isSubmitting}>
             {isSubmitting ? "전송 중..." : "제출"}
           </button>
         </footer>
       </form>
 
       {resultMessage ? (
-        <aside className={`feedback ${isSuccess ? "success" : "error"}`}>{resultMessage}</aside>
+        <aside className={`feedback ${isSuccess ? "success" : "error"}`} role={isSuccess ? "status" : "alert"}>
+          {resultMessage}
+        </aside>
       ) : null}
     </main>
   );
